@@ -5,6 +5,17 @@ use url::Url;
 use crate::error::{AiError, Result};
 use crate::settings::ProviderType;
 
+/// Check whether a model belongs to one of the whitelisted families.
+fn is_allowed_model(model_id: &str) -> bool {
+    let id = model_id.to_lowercase();
+    id.contains("sonnet")
+        || id.contains("opus")
+        || id.contains("glm")
+        || (id.contains("gemini") && id.contains("pro"))
+        || id.contains("kimi")
+        || id.contains("deepseek")
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct ModelInfo {
     pub id: String,
@@ -48,6 +59,7 @@ pub async fn fetch_models(provider_type: ProviderType, api_key: &str) -> Result<
                     display_name: m.name.unwrap_or_else(|| m.id.clone()),
                     id: m.id,
                 })
+                .filter(|m| is_allowed_model(&m.id))
                 .collect();
             models.sort_by(|a, b| a.id.cmp(&b.id));
             Ok(models)
@@ -74,6 +86,7 @@ pub async fn fetch_models(provider_type: ProviderType, api_key: &str) -> Result<
                     display_name: m.display_name.unwrap_or_else(|| m.id.clone()),
                     id: m.id,
                 })
+                .filter(|m| is_allowed_model(&m.id))
                 .collect();
             models.sort_by(|a, b| a.id.cmp(&b.id));
             Ok(models)

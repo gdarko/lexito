@@ -11,7 +11,7 @@ use crate::error::{AiError, Result};
 use crate::prompt::{batch_user_prompt, system_prompt, user_prompt};
 use crate::settings::{ProviderProfile, ProviderType, TranslationPreferences};
 
-const BATCH_CHUNK_SIZE: usize = 50;
+const BATCH_CHUNK_SIZE: usize = 30;
 
 #[derive(Debug, Clone)]
 pub struct ResolvedProviderProfile {
@@ -115,6 +115,7 @@ impl AiClient {
 
         let payload = ChatCompletionRequest {
             model: self.provider.model.clone(),
+            max_tokens: 65536,
             temperature: self.preferences.temperature.unwrap_or(0.2),
             response_format: ResponseFormat {
                 kind: "json_object".to_string(),
@@ -176,7 +177,7 @@ impl AiClient {
 
         let payload = AnthropicMessagesRequest {
             model: self.provider.model.clone(),
-            max_tokens: 4096,
+            max_tokens: 65536,
             temperature: self.preferences.temperature.unwrap_or(0.2),
             system: system_prompt(self.preferences.system_prompt.as_deref()),
             messages: vec![AnthropicMessage {
@@ -262,6 +263,7 @@ impl AiClient {
 
         let payload = ChatCompletionRequest {
             model: self.provider.model.clone(),
+            max_tokens: 65536,
             temperature: self.preferences.temperature.unwrap_or(0.2),
             response_format: ResponseFormat {
                 kind: "json_object".to_string(),
@@ -315,7 +317,7 @@ impl AiClient {
 
         let payload = AnthropicMessagesRequest {
             model: self.provider.model.clone(),
-            max_tokens: 16384,
+            max_tokens: 65536,
             temperature: self.preferences.temperature.unwrap_or(0.2),
             system: system_prompt(self.preferences.system_prompt.as_deref()),
             messages: vec![AnthropicMessage {
@@ -509,6 +511,7 @@ fn map_batch_results(
 #[derive(Debug, Clone, Serialize)]
 struct ChatCompletionRequest {
     model: String,
+    max_tokens: u32,
     temperature: f32,
     response_format: ResponseFormat,
     messages: Vec<ChatMessage>,
