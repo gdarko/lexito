@@ -376,6 +376,7 @@ impl LexitoApp {
                 match self.build_client() {
                     Ok(client) => {
                         let request = request_for_entry(entry, self.current_locale_value());
+                        self.translating = true;
                         self.status = "Requesting AI translation...".to_string();
                         Task::perform(
                             async move {
@@ -396,6 +397,7 @@ impl LexitoApp {
                 }
             }
             Message::SingleTranslationFinished(result) => {
+                self.translating = false;
                 match result {
                     Ok(outcome) => self.apply_ai_translation(outcome.key, outcome.response),
                     Err(error) => self.status = format!("AI translation failed: {error}"),

@@ -465,25 +465,40 @@ impl LexitoApp {
 
         // ── Translation section (main action area) ──────────
 
-        let action_buttons = row![
-            button(
-                row![icons::sparkles(14), text("AI Translate").size(13)]
-                    .spacing(6)
-                    .align_y(iced::Alignment::Center)
-            )
-            .style(accent_button_style)
-            .padding([8, 20])
-            .on_press(Message::TranslateSelectedPressed),
-            button(
-                row![icons::check(14), text("Apply").size(13)]
-                    .spacing(6)
-                    .align_y(iced::Alignment::Center)
-            )
-            .style(secondary_button_style)
-            .padding([8, 16])
-            .on_press(Message::ApplyLocalEdit),
-        ]
-        .spacing(8);
+        let translate_label = if self.translating {
+            "Translating\u{2026}"
+        } else if status == EntryStatus::Translated {
+            "Retranslate"
+        } else {
+            "AI Translate"
+        };
+
+        let editor_dirty = self.singular_input != entry.msgstr
+            || (entry.msgid_plural.is_some() && self.plural_inputs != entry.msgstr_plural);
+
+        let mut apply_btn = button(
+            row![icons::check(14), text("Apply").size(13)]
+                .spacing(6)
+                .align_y(iced::Alignment::Center),
+        )
+        .style(secondary_button_style)
+        .padding([8, 16]);
+        if editor_dirty {
+            apply_btn = apply_btn.on_press(Message::ApplyLocalEdit);
+        }
+
+        let mut translate_btn = button(
+            row![icons::wand(14), text(translate_label).size(13)]
+                .spacing(6)
+                .align_y(iced::Alignment::Center),
+        )
+        .style(accent_button_style)
+        .padding([8, 20]);
+        if !self.translating {
+            translate_btn = translate_btn.on_press(Message::TranslateSelectedPressed);
+        }
+
+        let action_buttons = row![translate_btn, apply_btn].spacing(8);
 
         let has_plural = entry.msgid_plural.is_some();
 
