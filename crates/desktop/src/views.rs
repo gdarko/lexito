@@ -33,11 +33,10 @@ impl LexitoApp {
         let header = self.view_workspace_header();
         let content = self.view_workspace();
 
-        let bottom =
-            container(text(&self.status).size(12).color(colors::text_muted(th)))
-                .style(status_bar_style)
-                .padding([6, 16])
-                .width(Length::Fill);
+        let bottom = container(text(&self.status).size(12).color(colors::text_muted(th)))
+            .style(status_bar_style)
+            .padding([6, 16])
+            .width(Length::Fill);
 
         let base = column![header, content, bottom]
             .width(Length::Fill)

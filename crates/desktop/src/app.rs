@@ -294,8 +294,8 @@ impl LexitoApp {
         let keys = keyboard::listen().map(Message::KeyboardEvent);
 
         if self.batch_handle.is_some() {
-            let spinner = time::every(std::time::Duration::from_millis(80))
-                .map(|_| Message::SpinnerTick);
+            let spinner =
+                time::every(std::time::Duration::from_millis(80)).map(|_| Message::SpinnerTick);
             Subscription::batch([keys, spinner])
         } else {
             keys
