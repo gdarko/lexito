@@ -9,6 +9,8 @@ set -euo pipefail
 
 REPO="gdarko/lexito"
 APP_NAME="Lexito"
+TMP_DIR=""
+trap 'if [[ -n "$TMP_DIR" ]]; then rm -rf "$TMP_DIR"; fi' EXIT
 
 # ── Detect platform ──────────────────────────────────────────────────
 
@@ -90,19 +92,18 @@ check_installed_version() {
 # ── Linux install ────────────────────────────────────────────────────
 
 install_linux() {
-    local tmp_dir download_url
-    tmp_dir="$(mktemp -d)"
-    trap 'rm -rf "$tmp_dir"' EXIT
+    local download_url
+    TMP_DIR="$(mktemp -d)"
 
     download_url="https://github.com/${REPO}/releases/download/${LATEST_VERSION}/lexito-${LATEST_VERSION}-linux-${ARCH}.tar.gz"
 
     echo "Downloading lexito-${LATEST_VERSION}-linux-${ARCH}.tar.gz..."
-    curl -fsSL "$download_url" -o "$tmp_dir/lexito.tar.gz"
-    tar xzf "$tmp_dir/lexito.tar.gz" -C "$tmp_dir"
+    curl -fsSL "$download_url" -o "$TMP_DIR/lexito.tar.gz"
+    tar xzf "$TMP_DIR/lexito.tar.gz" -C "$TMP_DIR"
 
     # Binary
     mkdir -p "${HOME}/.local/bin"
-    install -m 755 "$tmp_dir/lexito" "${HOME}/.local/bin/lexito"
+    install -m 755 "$TMP_DIR/lexito" "${HOME}/.local/bin/lexito"
     echo "  Installed binary to ~/.local/bin/lexito"
 
     # Icon (SVG from repo at the release tag)
@@ -147,15 +148,14 @@ DESKTOP
 # ── macOS install ────────────────────────────────────────────────────
 
 install_macos() {
-    local tmp_dir download_url install_dir
-    tmp_dir="$(mktemp -d)"
-    trap 'rm -rf "$tmp_dir"' EXIT
+    local download_url install_dir
+    TMP_DIR="$(mktemp -d)"
 
     download_url="https://github.com/${REPO}/releases/download/${LATEST_VERSION}/lexito-${LATEST_VERSION}-macos-${ARCH}.tar.gz"
 
     echo "Downloading lexito-${LATEST_VERSION}-macos-${ARCH}.tar.gz..."
-    curl -fsSL "$download_url" -o "$tmp_dir/lexito.tar.gz"
-    tar xzf "$tmp_dir/lexito.tar.gz" -C "$tmp_dir"
+    curl -fsSL "$download_url" -o "$TMP_DIR/lexito.tar.gz"
+    tar xzf "$TMP_DIR/lexito.tar.gz" -C "$TMP_DIR"
 
     install_dir="/Applications"
     if [[ ! -w "$install_dir" ]]; then
@@ -164,7 +164,7 @@ install_macos() {
     fi
 
     rm -rf "${install_dir}/Lexito.app"
-    cp -R "$tmp_dir/Lexito.app" "${install_dir}/Lexito.app"
+    cp -R "$TMP_DIR/Lexito.app" "${install_dir}/Lexito.app"
 
     # Clear quarantine (binary is not notarized)
     xattr -rd com.apple.quarantine "${install_dir}/Lexito.app" 2>/dev/null || true
