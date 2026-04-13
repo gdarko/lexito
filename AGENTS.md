@@ -37,7 +37,7 @@ Three-crate workspace (`crates/`), strict dependency hierarchy: **desktop → ai
 ### ai — API client, settings, keychain
 
 - `AiClient` supports OpenAI-compatible (`/chat/completions`) and Anthropic (`/messages`) endpoints. Single-entry and batched translation with streaming progress via `batch_stream()`.
-- Batch chunking: 50 entries per API call, configurable concurrency (default 4) via `buffer_unordered()`. Response parsing is flexible — handles raw JSON, objects with named arrays, markdown-fenced JSON, and single objects.
+- Batch chunking: 30 entries per API call, configurable concurrency (default 4) via `buffer_unordered()`. Response parsing is flexible — handles raw JSON, objects with named arrays, markdown-fenced JSON, and single objects.
 - `SettingsStore` persists `AppSettings` as TOML to platform config dirs (`directories::ProjectDirs`). `SecretStore` stores API keys in the system keychain under service `com.lexito.desktop` (hardcoded — changing it orphans existing keys).
 - Depends on core only for `TranslationPayload` and `EntryKey`.
 
@@ -50,6 +50,25 @@ Three-crate workspace (`crates/`), strict dependency hierarchy: **desktop → ai
 - **Provider draft pattern**: Editing a provider loads it into a mutable `ProviderDraft`; on save, it's split back into `ProviderProfile` (persisted as TOML) + API key (persisted to keychain).
 - Keyboard shortcuts in workspace: `↓`/`↑` navigate entries, `Cmd+S` save, `Cmd+Enter` apply edit, `Cmd+T` translate selected.
 - Theme is Catppuccin Mocha, hardcoded in `theme()`.
+
+## Versioning & Releases
+
+The version lives in two places:
+
+1. **`Cargo.toml` (workspace root), line `version = "…"`** — single source of truth for all three crates (each sub-crate inherits via `version.workspace = true`).
+2. **`macos/Info.plist`** — contains `__VERSION__` placeholders. This is **not** manually bumped; `macos/bundle.sh --version <tag>` substitutes the real version at build time.
+
+### How to bump the version
+
+1. Update `version` in the root `Cargo.toml` (e.g. `"0.2.0"`).
+2. Commit, then tag: `git tag v0.2.0 && git push origin v0.2.0`.
+3. The `release.yml` workflow triggers on the `v*` tag, builds all 4 platform archives (linux x86_64, linux aarch64, macos x86_64, macos aarch64), stamps the tag version into the macOS bundle's Info.plist, and creates a GitHub release with auto-generated changelog.
+
+Do **not** manually edit `Info.plist` version strings — they are overwritten by CI.
+
+### Release artifacts
+
+Archives are named `lexito-{tag}-{os}-{arch}.tar.gz`. macOS archives contain `Lexito.app`; Linux archives contain the `lexito` binary. The install script (`install.sh`) downloads the correct archive for the user's platform.
 
 ## Key Details
 

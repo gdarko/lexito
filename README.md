@@ -4,6 +4,16 @@ A desktop gettext translator for macOS and Linux, built with Rust and [Iced](htt
 
 ![Lexito screenshot](screenshot.png)
 
+## Install
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/gdarko/lexito/main/install.sh | bash
+```
+
+Works on macOS (Intel & Apple Silicon) and Linux (x86_64 & aarch64). On macOS it installs `Lexito.app` to `/Applications`. On Linux it installs the binary to `~/.local/bin` with a desktop entry and icon.
+
+Run the same command again to upgrade to the latest version.
+
 ## Features
 
 - Open `.po` files directly or `.pot` templates to start a locale-specific session
