@@ -11,3 +11,4 @@ lexito-ai = { path = "../ai" }
 lexito-core = { path = "../core" }
 uuid.workspace = true
 dark-light.workspace = true
+png = "0.17"

@@ -66,6 +66,10 @@ impl LexitoApp {
 
             // ── Navigation ───────────────────────────────────────
             Message::GoToProjects => {
+                if self.catalog.as_ref().is_some_and(|d| d.session().dirty) {
+                    self.pending_navigation = Some(Message::GoToProjects);
+                    return Task::none();
+                }
                 self.screen = AppScreen::ProjectList;
                 self.catalog = None;
                 self.current_language = None;
@@ -73,6 +77,10 @@ impl LexitoApp {
                 Task::none()
             }
             Message::GoToDashboard => {
+                if self.catalog.as_ref().is_some_and(|d| d.session().dirty) {
+                    self.pending_navigation = Some(Message::GoToDashboard);
+                    return Task::none();
+                }
                 self.screen = AppScreen::ProjectDashboard;
                 self.catalog = None;
                 self.current_language = None;
@@ -81,6 +89,17 @@ impl LexitoApp {
             }
             Message::GoToSettings => {
                 self.screen = AppScreen::Settings;
+                Task::none()
+            }
+            Message::SaveAndGo => self.update(Message::SavePressed),
+            Message::ConfirmDiscard => {
+                if let Some(nav) = self.pending_navigation.take() {
+                    return self.update(nav);
+                }
+                Task::none()
+            }
+            Message::CancelNavigation => {
+                self.pending_navigation = None;
                 Task::none()
             }
 
@@ -304,8 +323,12 @@ impl LexitoApp {
                     Ok(saved) => {
                         self.catalog = Some(saved.document);
                         self.status = saved.message;
+                        if let Some(nav) = self.pending_navigation.take() {
+                            return self.update(nav);
+                        }
                     }
                     Err(error) => {
+                        self.pending_navigation = None;
                         self.status = format!("Save failed: {error}");
                     }
                 }
@@ -319,13 +342,6 @@ impl LexitoApp {
             Message::FilterSelected(filter) => {
                 self.filter = filter;
                 self.select_first_visible_entry();
-                Task::none()
-            }
-            Message::LocaleChanged(locale) => {
-                self.locale_input = locale.code.to_string();
-                if let Some(document) = self.catalog.as_mut() {
-                    document.set_locale(locale.code);
-                }
                 Task::none()
             }
             Message::SingularChanged(value) => {

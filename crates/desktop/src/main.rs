@@ -25,6 +25,15 @@ pub const TITLEBAR_LEFT_PAD: f32 = 16.0;
 #[cfg(not(target_os = "macos"))]
 pub const TITLEBAR_LEFT_PAD: f32 = 0.0;
 
+fn load_icon() -> Option<iced::window::Icon> {
+    let decoder = png::Decoder::new(include_bytes!("../assets/icon.png").as_slice());
+    let mut reader = decoder.read_info().ok()?;
+    let mut buf = vec![0u8; reader.output_buffer_size()];
+    let info = reader.next_frame(&mut buf).ok()?;
+    buf.truncate(info.buffer_size());
+    iced::window::icon::from_rgba(buf, info.width, info.height).ok()
+}
+
 fn main() -> iced::Result {
     #[cfg(target_os = "macos")]
     let platform = iced::window::settings::PlatformSpecific {
@@ -49,6 +58,7 @@ fn main() -> iced::Result {
             position: iced::window::Position::Centered,
             transparent: true,
             blur: true,
+            icon: load_icon(),
             platform_specific: platform,
             ..Default::default()
         })

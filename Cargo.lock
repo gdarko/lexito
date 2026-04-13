@@ -2108,6 +2108,7 @@ dependencies = [
  "iced",
  "lexito-ai",
  "lexito-core",
+ "png",
  "rfd",
  "uuid",
 ]

@@ -69,6 +69,9 @@ pub enum Message {
     GoToProjects,
     GoToDashboard,
     GoToSettings,
+    SaveAndGo,
+    ConfirmDiscard,
+    CancelNavigation,
 
     // Project list
     OpenProject(PathBuf),
@@ -103,7 +106,6 @@ pub enum Message {
     CatalogSaved(Result<SaveCatalogResult, String>),
     SelectEntry(EntryKey),
     FilterSelected(EntryFilter),
-    LocaleChanged(Locale),
     SingularChanged(String),
     PluralChanged(usize, String),
     ApplyLocalEdit,

@@ -84,6 +84,48 @@ impl LexitoApp {
                 .height(Length::Fill);
 
             stack![base, overlay].into()
+        } else if self.pending_navigation.is_some() {
+            let modal_content = container(
+                column![
+                    text("Unsaved Changes").size(16).color(colors::ACCENT),
+                    text("You have unsaved translation changes. What would you like to do?")
+                        .size(13)
+                        .color(colors::text_muted(th)),
+                    row![
+                        button(text("Save & Go").size(13))
+                            .style(accent_button_style)
+                            .padding([8, 16])
+                            .on_press(Message::SaveAndGo),
+                        button(text("Discard").size(13))
+                            .style(secondary_button_style)
+                            .padding([8, 16])
+                            .on_press(Message::ConfirmDiscard),
+                        button(text("Cancel").size(13))
+                            .style(secondary_button_style)
+                            .padding([8, 16])
+                            .on_press(Message::CancelNavigation),
+                    ]
+                    .spacing(8),
+                ]
+                .spacing(16)
+                .align_x(iced::Alignment::Center)
+                .width(400),
+            )
+            .padding(24)
+            .style(section_style)
+            .center_x(Length::Fill)
+            .center_y(Length::Fill);
+
+            let backdrop_color = colors::overlay(th);
+            let overlay = container(opaque(modal_content))
+                .style(move |_: &Theme| container::Style {
+                    background: Some(Background::Color(backdrop_color)),
+                    ..Default::default()
+                })
+                .width(Length::Fill)
+                .height(Length::Fill);
+
+            stack![base, overlay].into()
         } else {
             base.into()
         }
@@ -309,13 +351,13 @@ impl LexitoApp {
         let sidebar = container(
             column![
                 text("Catalog").size(16).color(colors::ACCENT),
-                combo_box(
-                    &self.locale_state,
-                    "Search locale\u{2026}",
-                    find_locale(&self.locale_input),
-                    Message::LocaleChanged,
+                text(
+                    find_locale(&self.locale_input)
+                        .map(|l| l.to_string())
+                        .unwrap_or_else(|| self.locale_input.clone()),
                 )
-                .menu_style(combo_menu_style),
+                .size(14)
+                .color(colors::text_main(th)),
                 text(format!("Source: {}", session.source_path.display()))
                     .size(12)
                     .color(colors::text_faint(th)),
