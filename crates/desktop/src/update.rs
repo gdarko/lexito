@@ -460,8 +460,13 @@ impl LexitoApp {
                     handle.abort();
                     self.batch_total = 0;
                     self.batch_completed = 0;
+                    self.spinner_tick = 0;
                     self.status = "Batch translation canceled.".to_string();
                 }
+                Task::none()
+            }
+            Message::SpinnerTick => {
+                self.spinner_tick = self.spinner_tick.wrapping_add(1);
                 Task::none()
             }
 

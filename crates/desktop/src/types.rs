@@ -115,6 +115,7 @@ pub enum Message {
     ApproveAllFuzzy,
     BatchProgress(BatchProgressEvent),
     CancelBatch,
+    SpinnerTick,
 
     // Provider management
     SelectProvider(Uuid),

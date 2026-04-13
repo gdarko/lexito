@@ -1,6 +1,6 @@
 use iced::widget::{
-    button, checkbox, column, combo_box, container, pick_list, progress_bar, row, rule, scrollable,
-    space, text, text_input,
+    button, checkbox, column, combo_box, container, opaque, pick_list, progress_bar, row, rule,
+    scrollable, space, stack, text, text_input,
 };
 use iced::{Background, Border, Color, Element, Font, Length, Padding, Theme};
 use lexito_ai::{ProviderProfile, ProviderType, ThemePreference};
@@ -33,42 +33,60 @@ impl LexitoApp {
         let header = self.view_workspace_header();
         let content = self.view_workspace();
 
-        let mut bottom = column![].width(Length::Fill);
+        let bottom =
+            container(text(&self.status).size(12).color(colors::text_muted(th)))
+                .style(status_bar_style)
+                .padding([6, 16])
+                .width(Length::Fill);
+
+        let base = column![header, content, bottom]
+            .width(Length::Fill)
+            .height(Length::Fill);
 
         if self.batch_handle.is_some() && self.batch_total > 0 {
+            const SPINNER: &[char] = &['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
+            let frame = SPINNER[self.spinner_tick % SPINNER.len()];
             let pct = self.batch_completed as f32 / self.batch_total as f32;
             let label = format!(
-                "Translating: {}/{} ({:.0}%)",
+                "{frame} Translating: {}/{} ({:.0}%)",
                 self.batch_completed,
                 self.batch_total,
                 pct * 100.0
             );
-            bottom = bottom.push(
-                container(
-                    column![
-                        text(label).size(11).color(colors::text_muted(th)),
-                        progress_bar(0.0..=1.0, pct)
-                            .girth(4)
-                            .style(accent_progress_style),
-                    ]
-                    .spacing(4),
-                )
-                .padding([6, 16])
-                .width(Length::Fill),
-            );
+
+            let modal_content = container(
+                column![
+                    text(label).size(14).color(colors::text_main(th)),
+                    progress_bar(0.0..=1.0, pct)
+                        .girth(6)
+                        .style(accent_progress_style),
+                    button(text("Cancel").size(13))
+                        .style(secondary_button_style)
+                        .padding([6, 20])
+                        .on_press(Message::CancelBatch),
+                ]
+                .spacing(12)
+                .align_x(iced::Alignment::Center)
+                .width(360),
+            )
+            .padding(24)
+            .style(section_style)
+            .center_x(Length::Fill)
+            .center_y(Length::Fill);
+
+            let backdrop_color = colors::overlay(th);
+            let overlay = container(opaque(modal_content))
+                .style(move |_: &Theme| container::Style {
+                    background: Some(Background::Color(backdrop_color)),
+                    ..Default::default()
+                })
+                .width(Length::Fill)
+                .height(Length::Fill);
+
+            stack![base, overlay].into()
+        } else {
+            base.into()
         }
-
-        bottom = bottom.push(
-            container(text(&self.status).size(12).color(colors::text_muted(th)))
-                .style(status_bar_style)
-                .padding([6, 16])
-                .width(Length::Fill),
-        );
-
-        column![header, content, bottom]
-            .width(Length::Fill)
-            .height(Length::Fill)
-            .into()
     }
 
     fn view_settings_screen(&self) -> Element<'_, Message> {
@@ -166,14 +184,6 @@ impl LexitoApp {
                 .padding([6, 12])
                 .on_press(Message::ApproveAllFuzzy),
             );
-            if self.batch_handle.is_some() {
-                bulk = bulk.push(
-                    button(text("Cancel").size(12))
-                        .style(secondary_button_style)
-                        .padding([6, 12])
-                        .on_press(Message::CancelBatch),
-                );
-            }
         }
 
         let mut file_actions = row![].spacing(4);

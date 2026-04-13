@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use iced::task;
 use iced::widget::{combo_box, scrollable};
-use iced::{keyboard, widget, Subscription, Task, Theme};
+use iced::{keyboard, time, widget, Subscription, Task, Theme};
 use lexito_ai::{
     AiClient, AppSettings, ModelInfo, ProviderDraft, ProviderProfile, ResolvedProviderProfile,
     SecretStore, SettingsStore, ThemePreference, TranslationPreferences,
@@ -47,6 +47,7 @@ pub struct LexitoApp {
     pub(crate) batch_handle: Option<task::Handle>,
     pub(crate) batch_total: usize,
     pub(crate) batch_completed: usize,
+    pub(crate) spinner_tick: usize,
     // Provider editing
     pub(crate) editing_provider: Option<ProviderDraft>,
     pub(crate) available_models: Vec<ModelInfo>,
@@ -140,6 +141,7 @@ impl LexitoApp {
                 batch_handle: None,
                 batch_total: 0,
                 batch_completed: 0,
+                spinner_tick: 0,
                 editing_provider: None,
                 available_models: Vec::new(),
                 models_loading: false,
@@ -287,7 +289,15 @@ impl LexitoApp {
     }
 
     pub fn subscription(&self) -> Subscription<Message> {
-        keyboard::listen().map(Message::KeyboardEvent)
+        let keys = keyboard::listen().map(Message::KeyboardEvent);
+
+        if self.batch_handle.is_some() {
+            let spinner = time::every(std::time::Duration::from_millis(80))
+                .map(|_| Message::SpinnerTick);
+            Subscription::batch([keys, spinner])
+        } else {
+            keys
+        }
     }
 
     pub(crate) fn select_next_entry(&mut self) {
