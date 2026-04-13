@@ -11,10 +11,10 @@ use crate::colors;
 use crate::icons;
 use crate::locales::Locale;
 use crate::theme::{
-    accent_button_style, accent_progress_style, accent_scrollbar_style, entry_button_style,
-    filter_button_style, header_style, input_style, panel_style, provider_card_style,
-    secondary_button_style, section_style, status_bar_style, status_color, status_label,
-    status_pill, toolbar_button_style, truncate,
+    accent_button_style, accent_progress_style, accent_scrollbar_style, combo_menu_style,
+    entry_button_style, filter_button_style, header_style, input_style, panel_style,
+    provider_card_style, secondary_button_style, section_style, status_bar_style, status_color,
+    status_label, status_pill, toolbar_button_style, truncate,
 };
 use crate::types::{AppScreen, EntryFilter, Message};
 
@@ -314,7 +314,8 @@ impl LexitoApp {
                     "Search locale\u{2026}",
                     find_locale(&self.locale_input),
                     Message::LocaleChanged,
-                ),
+                )
+                .menu_style(combo_menu_style),
                 text(format!("Source: {}", session.source_path.display()))
                     .size(12)
                     .color(colors::text_faint(th)),
@@ -691,6 +692,7 @@ impl LexitoApp {
                         find_locale(&self.default_locale_input),
                         Message::DefaultLocaleChanged,
                     )
+                    .menu_style(combo_menu_style)
                 ]
                 .spacing(4),
                 settings_field(

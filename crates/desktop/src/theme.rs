@@ -370,6 +370,25 @@ pub fn accent_progress_style(theme: &Theme) -> iced::widget::progress_bar::Style
     }
 }
 
+// ── Combo box menu style ─────────────────────────────────────────
+
+pub fn combo_menu_style(theme: &Theme) -> iced::widget::overlay::menu::Style {
+    let bg = colors::surface_1(theme);
+    let bg_opaque = Color { a: 1.0, ..bg };
+    iced::widget::overlay::menu::Style {
+        background: Background::Color(bg_opaque),
+        border: Border {
+            color: colors::border(theme),
+            width: 1.0,
+            radius: 8.0.into(),
+        },
+        text_color: colors::text_main(theme),
+        selected_text_color: Color::WHITE,
+        selected_background: Background::Color(colors::ACCENT),
+        shadow: Shadow::default(),
+    }
+}
+
 // ── Helpers ──────────────────────────────────────────────────────
 
 pub fn status_color(status: EntryStatus) -> Color {

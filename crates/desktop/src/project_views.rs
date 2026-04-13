@@ -8,8 +8,8 @@ use crate::colors;
 use crate::icons;
 use crate::locales::Locale;
 use crate::theme::{
-    accent_button_style, accent_progress_style, header_style, input_style, secondary_button_style,
-    section_style, status_bar_style, toolbar_button_style,
+    accent_button_style, accent_progress_style, combo_menu_style, header_style, input_style,
+    secondary_button_style, section_style, status_bar_style, toolbar_button_style,
 };
 use crate::types::Message;
 
@@ -307,6 +307,7 @@ impl LexitoApp {
                         None::<&Locale>,
                         Message::AddLanguage,
                     )
+                    .menu_style(combo_menu_style)
                     .width(Length::Fill),
                 ]
                 .spacing(8)
