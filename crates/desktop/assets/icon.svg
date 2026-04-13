@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1e1e2e"/>
+      <stop offset="100%" stop-color="#181825"/>
+    </linearGradient>
+  </defs>
+  <!-- Rounded square background (Catppuccin Mocha Base) -->
+  <rect width="1024" height="1024" rx="220" ry="220" fill="url(#bg)"/>
+  <!-- Subtle border -->
+  <rect width="1024" height="1024" rx="220" ry="220" fill="none" stroke="#313244" stroke-width="4"/>
+  <!-- Languages icon (Lucide) scaled and centered, stroke #50C878 emerald -->
+  <g transform="translate(172, 172) scale(28.333)" fill="none" stroke="#50C878" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+    <!-- CJK character strokes (left side) -->
+    <path d="m5 8 6 6"/>
+    <path d="m4 14 6-6 2-3"/>
+    <path d="M2 5h12"/>
+    <path d="M7 2h1"/>
+    <!-- Latin A character (right side) -->
+    <path d="m22 22-5-10-5 10"/>
+    <path d="M14 18h6"/>
+  </g>
+</svg>

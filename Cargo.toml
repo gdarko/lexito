@@ -1,0 +1,33 @@
+[workspace]
+members = [
+    "crates/core",
+    "crates/ai",
+    "crates/desktop",
+]
+resolver = "2"
+
+[workspace.package]
+edition = "2021"
+license = "MIT"
+version = "0.1.0"
+
+[workspace.dependencies]
+anyhow = "1"
+dark-light = "2"
+async-stream = "0.3"
+directories = "6"
+futures = "0.3"
+iced = { version = "0.14", features = ["tokio", "svg"] }
+keyring = { version = "3.6", features = ["apple-native", "linux-native-sync-persistent", "vendored"] }
+regex = "1"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+rfd = "0.17"
+rspolib = "0.1.2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tempfile = "3"
+thiserror = "2"
+tokio = { version = "1", features = ["macros", "rt-multi-thread", "sync", "time"] }
+toml = "0.8"
+url = { version = "2", features = ["serde"] }
+uuid = { version = "1", features = ["serde", "v4"] }

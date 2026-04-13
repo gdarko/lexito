@@ -1,0 +1,11 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: translatee-tests\n"
+"Language: fr\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#. Greeting on home screen
+#: src/main.rs:10
+msgctxt "home"
+msgid "Hello %s"
+msgstr "Bonjour %s"

@@ -1,0 +1,13 @@
+[package]
+name = "lexito"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+iced.workspace = true
+rfd.workspace = true
+lexito-ai = { path = "../ai" }
+lexito-core = { path = "../core" }
+uuid.workspace = true
+dark-light.workspace = true
